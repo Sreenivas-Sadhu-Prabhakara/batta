@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Batta — old-gold exchange</title>
+<meta name="description" content="Batta resolves old-gold weight, purity, today's rate and the shop's wastage deduction into an exchange value and the balance due on a new purchase — with a printable derivation slip.">
+<style>
+  :root{--bg:#f8f5ec;--card:#fff;--ink:#231d0d;--muted:#6a5c3c;--brand:#b08a2e;--brand-ink:#7a5d17;--line:#ebe2cd;--accent:#f4ecd8}
+  @media (prefers-color-scheme:dark){:root{--bg:#15120a;--card:#1e190f;--ink:#efe7d3;--muted:#b8a882;--brand:#d0a94e;--brand-ink:#f0d79f;--line:#2a2314;--accent:#231d10}}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{padding:64px 0 24px;text-align:center}
+  .eyebrow{color:var(--brand);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+  h1{font-size:44px;margin:.2em 0 .1em;letter-spacing:-.02em}
+  .tag{color:var(--muted);font-size:19px;max-width:640px;margin:8px auto 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:28px 0}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card h2{margin:0 0 8px;font-size:20px}
+  label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+  input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:15px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .out{margin-top:16px;background:var(--accent);border-radius:12px;padding:16px}
+  .big{font-size:28px;font-weight:800;color:var(--brand-ink)}
+  .rowline{display:flex;justify-content:space-between;padding:4px 0;font-size:14px;border-top:1px dashed var(--line);margin-top:6px}
+  footer{color:var(--muted);font-size:13px;text-align:center;padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Batta · बट्टा</div>
+    <h1>Old gold, exact exchange</h1>
+    <p class="tag">Purity-adjust, apply the day's rate, deduct wastage, and resolve straight into the
+      balance due on the new piece — with a derivation slip the customer can see.</p>
+  </header>
+  <div class="grid">
+    <div class="card">
+      <h2>Try it</h2>
+      <div class="two"><div><label>Old gold weight (g)</label><input id="w" type="number" value="10"></div>
+        <div><label>Purity %</label><input id="p" type="number" value="91.6"></div></div>
+      <div class="two"><div><label>Rate ₹/g (pure)</label><input id="r" type="number" value="6000"></div>
+        <div><label>Wastage deduct %</label><input id="wa" type="number" value="8"></div></div>
+      <label>New item price ₹</label><input id="np" type="number" value="80000">
+      <div class="out">
+        <div>Balance due on the new item</div><div class="big" id="bal">₹0.00</div>
+        <div class="rowline"><span>Pure content</span><b id="content">–</b></div>
+        <div class="rowline"><span>Gross value</span><b id="gross">–</b></div>
+        <div class="rowline"><span>Exchange value (after wastage)</span><b id="ex">–</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>The counter workflow, not a rate app</h2>
+      <p style="color:var(--muted)">Free gold-rate calculators stop at a number. Batta resolves old-gold
+        value directly into the balance due on a specific new purchase, and prints a customer-facing
+        derivation slip those apps don't offer.</p>
+      <p style="color:var(--muted)">Exchange = weight × purity × rate × (1 − wastage). Balance = new price − exchange.</p>
+      <p style="color:var(--muted);font-size:14px">Flutter → Go → PostgreSQL.</p>
+    </div>
+  </div>
+  <footer>Batta · a local-first shopkeeper tool · offline, no account.</footer>
+</div>
+<script>
+  const $=id=>document.getElementById(id), inr=v=>'₹'+(isFinite(v)?v:0).toFixed(2);
+  function calc(){
+    const w=+$('w').value||0, p=+$('p').value||0, r=+$('r').value||0, wa=+$('wa').value||0, np=+$('np').value||0;
+    const content=w*p/100, gross=content*r, ex=gross*(1-wa/100), bal=np-ex;
+    $('bal').textContent=inr(bal); $('content').textContent=content.toFixed(3)+' g';
+    $('gross').textContent=inr(gross); $('ex').textContent=inr(ex);
+  }
+  document.querySelectorAll('input').forEach(el=>el.addEventListener('input',calc)); calc();
+</script>
+</body>
+</html>
